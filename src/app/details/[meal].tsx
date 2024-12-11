@@ -1,10 +1,10 @@
 import api from "@/src/apis/axios";
 import TruncateString from "@/src/utils/truncateStr";
 import { Feather } from "@expo/vector-icons";
-import { Stack, useLocalSearchParams } from "expo-router";
+import { Link, Stack, useLocalSearchParams } from "expo-router";
 import { useColorScheme } from "nativewind";
 import { useEffect, useState } from "react";
-import { View, Text, Image } from "react-native";
+import { View, Text, Image, ScrollView } from "react-native";
 
 const fetchData = async (
   mealId: string,
@@ -18,7 +18,7 @@ const fetchData = async (
     const response = await api.get("/lookup.php", {
       params: { i: mealId },
     });
-    console.log(response.data.meals[0]);
+    // console.log(response.data.meals[0]);
     setResult(response.data.meals[0] || {});
   } catch (error) {
     console.log(error);
@@ -38,6 +38,33 @@ const DetailsScreen = () => {
   useEffect(() => {
     fetchData(mealId.toString(), setResult, setLoading, setError);
   }, [mealId]);
+
+  const ingridients = Object.entries(result).filter(
+    ([key, value]) =>
+      key.includes("strIngredient") && value !== null && value !== ""
+  );
+
+  const measures = Object.entries(result).filter(
+    ([key, value]) =>
+      key.includes("strMeasure") && value !== null && value !== ""
+  );
+
+  const ingredientsWithMeasures: any[] = ingridients.map(
+    ([ingridientKey, ingridientValue], index) => {
+      const [measuresKey, measuresValue] = measures[index] || [];
+      return {
+        ingridient: ingridientValue,
+        measures: measuresValue,
+      };
+    }
+  );
+
+  const instructions =
+    result.strInstructions &&
+    result?.strInstructions
+      .split(".")
+      .map((instruction: string) => instruction.trim())
+      .filter((instruction: string) => instruction !== "");
 
   if (loading && !error && !result) {
     return (
@@ -77,8 +104,12 @@ const DetailsScreen = () => {
             : "Meal Details",
         }}
       />
-      <View className="flex-1 justify-center items-center dark:bg-black">
-        <View className="flex-1 w-[90%] self-center flex-col justify-start items-start py-5">
+      <ScrollView
+        className="flex-1 dark:bg-black"
+        contentContainerStyle={{ paddingVertical: 20 }}
+        showsVerticalScrollIndicator={false}
+      >
+        <View className="w-[90%] self-center flex-col justify-start items-start">
           <Image
             source={{ uri: result.strMealThumb }}
             alt={result.strMeal}
@@ -87,16 +118,50 @@ const DetailsScreen = () => {
           <Text className="text-2xl font-bold dark:text-white text-center py-4 w-full">
             {result.strMeal}
           </Text>
-          {/* <View className="flex-row justify-between items-center w-full">
-            <Text className="text-lg font-bold bg-gray-100 dark:bg-gray-400 dark:text-white p-1.5 rounded-md">
-              {result.strCategory}
+          {result.strSource && result.strYoutube && (
+            <View className="flex-row justify-between items-center w-full mb-5">
+              <Link
+                href={result.strSource}
+                className="text-lg font-bold border border-blue-500 bg-blue-200 rounded-md p-1.5 w-[40%] text-center"
+              >
+                Source
+              </Link>
+              <Link
+                href={result.strYoutube}
+                className="text-lg font-bold border border-red-500 bg-red-200 rounded-md p-1.5 w-[40%] text-center"
+              >
+                Youtube
+              </Link>
+            </View>
+          )}
+          <View className="justify-start items-start bg-gray-200 dark:bg-gray-800 p-4 rounded-md w-full mb-4">
+            <Text className="text-xl font-bold dark:text-white pb-4">
+              Ingredients
             </Text>
-            <Text className="text-lg font-bold bg-gray-100 dark:bg-gray-400 dark:text-white p-1.5 rounded-md">
-              {result.strArea}
+            {ingredientsWithMeasures?.map((item, index: number) => (
+              <Text
+                key={index.toString()}
+                className="text-lg font-semibold dark:text-white w-full"
+              >
+                {index + 1}. {item.ingridient} : {item.measures}
+              </Text>
+            ))}
+          </View>
+          <View className="justify-start items-start bg-gray-200 dark:bg-gray-800 p-4 rounded-md w-full">
+            <Text className="text-xl font-bold dark:text-white pb-4">
+              Instructions to Prepare
             </Text>
-          </View> */}
+            {instructions?.map((instruction: any, index: number) => (
+              <Text
+                key={index.toString()}
+                className="text-lg font-semibold dark:text-white w-full"
+              >
+                {index + 1}. {instruction.trim()}
+              </Text>
+            ))}
+          </View>
         </View>
-      </View>
+      </ScrollView>
     </>
   );
 };

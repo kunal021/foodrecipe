@@ -25,6 +25,8 @@ export default function RootLayout() {
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="+not-found" />
         <Stack.Screen name="details/[meal]"></Stack.Screen>
+        <Stack.Screen name="countries/[country]"></Stack.Screen>
+        <Stack.Screen name="ingridents/[ingrident]"></Stack.Screen>
       </Stack>
     </SavedRecipeProvider>
   );

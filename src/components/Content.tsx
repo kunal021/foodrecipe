@@ -44,12 +44,32 @@ const Content = ({ results }: { results: any[] }) => {
                     </TouchableOpacity>
                   </View>
                   <View className="flex-row justify-between items-center w-full">
-                    <Text className="text-lg font-bold bg-gray-100 dark:bg-gray-400 dark:text-white p-1.5 rounded-md">
-                      {item.strCategory}
-                    </Text>
-                    <Text className="text-lg font-bold bg-gray-100 dark:bg-gray-400 dark:text-white p-1.5 rounded-md">
-                      {item.strArea}
-                    </Text>
+                    {item.strCategory && (
+                      <TouchableOpacity
+                        onPress={() =>
+                          router.push(
+                            `/ingridents/[ingrident]?i=${item.strCategory}`
+                          )
+                        }
+                        className="bg-gray-100 dark:bg-gray-400 p-1.5 rounded-md"
+                      >
+                        <Text className="text-lg font-bold text-center dark:text-white">
+                          {item.strCategory}
+                        </Text>
+                      </TouchableOpacity>
+                    )}
+                    {item.strArea && (
+                      <TouchableOpacity
+                        onPress={() =>
+                          router.push(`/countries/[country]?a=${item.strArea}`)
+                        }
+                        className="bg-gray-100 dark:bg-gray-400 p-1.5 rounded-md"
+                      >
+                        <Text className="text-lg font-bold text-center dark:text-white">
+                          {item.strArea}
+                        </Text>
+                      </TouchableOpacity>
+                    )}
                   </View>
                   <TouchableOpacity
                     onPress={() =>

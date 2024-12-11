@@ -43,7 +43,7 @@ export default function TabsLayout() {
           tabBarLabel: "Saved",
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
-              name={focused ? "save-sharp" : "save-outline"}
+              name={focused ? "star-sharp" : "star-outline"}
               color={color}
               size={24}
             />
